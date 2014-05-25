@@ -2,8 +2,8 @@ basehead
 ========
 
 python wrapper for basecamp-next api
+-------------------------------------
 
-+++++++++++++++++++++++++++
 
 to use:
   open basehead/core.py abd input your basecamp accout number, 
@@ -14,7 +14,7 @@ to use:
   
   this file should contain 
   
-  BASECAMP_USERNAME
+  BASECAMP_USERNAME<br />
   BASECAMP_PASSWORD
   
   
@@ -23,16 +23,16 @@ to use:
   then open up ipython
   
   and:
-  
-  >>> from people import get_me
-  >>> me = get_me() # me is all the data from the above users account
-  
+  <pre>
+  [in]: from people import get_me
+  [out]: me = get_me() # me is all the data from the above users account
+  </pre>
   
   or if you like objects
-  
-  >>> from basehead.basecamp import BaseCamper
-  >>> bc = BaseCamper()
-  
+  <pre>
+  [in]: from basehead.basecamp import BaseCamper
+  [out]: bc = BaseCamper()
+  </pre>
   now bc has all your account data
   
   more to come
