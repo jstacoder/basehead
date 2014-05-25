@@ -3,7 +3,10 @@ from people import get_me
 from projects import get_all_active_projects, get_project
 from todo_lists import get_todo_list, get_todo, get_all_active_todo_lists
 from stars import get_starred_projects
-from MY_BC import BC
+try:
+    from MY_BC import BC
+except ImportError:
+    from core import MY_BC_NUMBER as BC
 
 class Camper(object):
     def __init__(self,**kwargs):
