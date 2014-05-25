@@ -7,9 +7,11 @@ import os
 import requests as req
 
 API_URL = 'https://basecamp.com/{}/api/v1/'
-MY_API_URL = API_URL.format('2361076')
+MY_BC_NUMBER = '2361076'
 
-def make_api_url(account_num='2361076',call=None,*args):
+def make_api_url(account_num=None,call=None,*args):
+    if account_num is None:
+        account_num = MY_BC_NUMBER
     if call is None:
         call = ''
     u = API_URL.format(account_num) + call 
