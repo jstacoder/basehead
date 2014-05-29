@@ -51,30 +51,27 @@ class Camper(object):
 
 
 class BaseCampPerson(object):
-    BC_ACCOUNT_NUM = 2361076
+    BC_ACCOUNT_NUM = BC
     
 
 class BaseCamper(BaseCampPerson):
-    def __init__(self,bc_account_number=None,username=None,passwd=None,**kwargs):
+    def __init__(self,bc_account_number=None,**kwargs):
         if bc_account_number is None and kwargs.get('account',None) is None:
-            bc_account_number = self.BC_ACCOUNT_NUM
+            self.bc_number = self.BC_ACCOUNT_NUM
         else:
             if bc_account_number is not None:
                 self.bc_number = bc_account_number
             else:
                 self.bc_number = kwargs.get('account',None)
-        if username is None:
-            username, passwd = get_auth()
-        self.username = username
-        self.passwd = passwd
-        self._internal_camper = Camper(**get_me(self.bc_number,self.username,self.passwd))
+
+        self._internal_camper = Camper(**get_me(self.bc_number))
         self._todos = []
         for attr in dir(self._internal_camper):
             if not attr.startswith('_'):
                 setattr(self,attr,getattr(self._internal_camper,attr))
         self._get_todos()
-        self.projects = ['1','2']
-        #self._get_projects()
+        
+        self._get_projects()
 
     def __getitem__(self,key):
         if key in dir(self._internal_camper):
@@ -90,12 +87,15 @@ class BaseCamper(BaseCampPerson):
                 self._todos.append(res)
             self._todo_buckets.append(tmp)
 
+    def get_project(self,pid):
+        return get_project(self.BC_ACCOUNT_NUM,pid)
+
     def _get_projects(self):
         self.pm = BCProjectManager(self)
 
     @staticmethod
     def send_basecamp_request(url):
-        return send_request(url=url,auth=get_auth(self.username,self.passwd))
+        return send_request(url=url)
 
     @property 
     def todo_buckets(self):
@@ -116,9 +116,9 @@ class BaseCamper(BaseCampPerson):
     def project_count(self):
         return len(self.projects)
     
-    #@property
-    #def projects(self):
-    #    return self.pm.projects
+    @property
+    def projects(self):
+        return self.pm.projects
 
 
 class BCProjectManager(object):
@@ -135,6 +135,6 @@ class BCProjectManager(object):
     def get_project_todolists(self,pid):
         for proj in self.projects:
             if proj['id'] == pid:
-                return send_request(url=proj['todolists']['url'],auth=get_auth())
+                return send_request(url=proj['todolists']['url'])
         return None
     

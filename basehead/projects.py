@@ -8,5 +8,5 @@ def get_all_archived_projects(account_num):
     return send_request(make_api_url(account_num,'projects','archived'))
 
 def get_project(account_num,project_id):
-    return make_api_url(account_num,'projects',project_id)
+    return send_request(make_api_url(account_num,'projects',project_id))
 
