@@ -1,4 +1,4 @@
-from core import send_request, get_auth
+from core import send_request
 from people import get_me
 from projects import get_all_active_projects, get_project
 from todo_lists import get_todo_list, get_todo, get_all_active_todo_lists
@@ -48,18 +48,30 @@ class Camper(object):
 
 
 class BaseCampPerson(object):
-    BC_ACCOUNT_NUM = BC
+    BC_ACCOUNT_NUM = 2361076
     
 
 class BaseCamper(BaseCampPerson):
-    def __init__(self):
-        self._internal_camper = Camper(**get_me())
+    def __init__(self,bc_account_number=None,username=None,passwd=None,**kwargs):
+        if bc_account_number is None and kwargs.get('account',None) is None:
+            bc_account_number = self.BC_ACCOUNT_NUM
+        else:
+            if bc_account_number is not None:
+                self.bc_number = bc_account_number
+            else:
+                self.bc_number = kwargs.get('account',None)
+        if username is None:
+            username, passwd = get_auth()
+        self.username = username
+        self.passwd = passwd
+        self._internal_camper = Camper(**get_me(self.bc_number,self.username,self.passwd))
         self._todos = []
         for attr in dir(self._internal_camper):
             if not attr.startswith('_'):
                 setattr(self,attr,getattr(self._internal_camper,attr))
         self._get_todos()
-        self._get_projects()
+        self.projects = ['1','2']
+        #self._get_projects()
 
     def __getitem__(self,key):
         if key in dir(self._internal_camper):
@@ -80,7 +92,7 @@ class BaseCamper(BaseCampPerson):
 
     @staticmethod
     def send_basecamp_request(url):
-        return send_request(url=url,auth=get_auth())
+        return send_request(url=url,auth=get_auth(self.username,self.passwd))
 
     @property 
     def todo_buckets(self):
@@ -97,6 +109,13 @@ class BaseCamper(BaseCampPerson):
     @property
     def event_count(self):
         return len(self.events)
+    @property
+    def project_count(self):
+        return len(self.projects)
+    
+    #@property
+    #def projects(self):
+    #    return self.pm.projects
 
 
 class BCProjectManager(object):
