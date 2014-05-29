@@ -4,7 +4,8 @@
     core api calls for new_bc api library
 '''
 import os
-import requests as req
+import requests 
+
 
 API_URL = 'https://basecamp.com/{}/api/v1/'
 MY_API_URL = API_URL.format('2361076')
@@ -16,16 +17,23 @@ def make_api_url(account_num='2361076',call=None,*args):
     u = u + '.json' if not args else u + '/' + '/'.join(map(str,args)) + '.json'
     return u
 
-def send_request(url=None,auth=None,json=True):
-    if auth is None:
-        auth = get_auth()
+
+def get_auth(username=None,passwd=None):
+    if username and passwd:
+        return (username,passwd)
+    else:
+        if os.path.exists('auth.txt'):
+            return tuple([str(x[:-1]) for x in tuple(open('auth.txt').readlines())])
+
+
+req = requests.session()
+req.auth = get_auth()
+
+def send_request(url=None,json=True):
+    global req
     if url is None:
         raise IOError('need a url to send request to')
     if json:
-        return req.get(url,auth=auth).json()
+        return req.get(url).json()
     else:
-        return req.get(url,auth=auth)
-
-def get_auth():
-    if os.path.exists('auth.txt'):
-        return tuple([str(x[:-1]) for x in tuple(open('auth.txt','r').readlines())])
+        return req.get(url)
